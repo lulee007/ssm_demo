@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration threshold="trace">
+	<appender name="stdout-appender" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p %c{1}: %m%n" />
+		</layout>
+	</appender>
+	<appender name="sql-appender" class="org.apache.log4j.FileAppender">
+		<param name="File" value="db_sql.log" />
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="-----&gt; %d{yyyy-MM-dd HH:mm:ss.SSS} &lt;%t&gt; %m%n%n" />
+		</layout>
+	</appender>
+	<appender name="sql-timing-appender" class="org.apache.log4j.FileAppender">
+		<param name="File" value="db_sqltiming.log"/>
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="-----&gt; %d{yyyy-MM-dd HH:mm:ss.SSS} %m%n%n" />
+		</layout>
+	</appender>
+	<appender name="jdbc-appender" class="org.apache.log4j.FileAppender">
+		<param name="File" value="db_jdbc.log" />
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n" />
+		</layout>
+	</appender>
+	<appender name="jdbc-connection" class="org.apache.log4j.FileAppender">
+		<param name="File" value="db_connection.log" />
+		<param name="Append" value="true" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="web-file" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="web.log" /><!-- 设置日志输出文件名 -->
+        <!-- 设置是否在重新启动服务时，在原有日志的基础添加新日志 -->       
+        <param name="Append" value="true" />       
+        <param name="MaxBackupIndex" value="30" />       
+        <layout class="org.apache.log4j.PatternLayout">       
+            <param name="ConversionPattern" value="%-d{yyyy-MM-dd HH:mm:ss}- [ %p ] %l %m%n" />       
+        </layout>       
+    </appender>	
+	
+	
+	 <!-- spring -->
+	 <logger name="org.springframework" additivity="true">
+	  <level value="debug" />
+	 </logger>
+
+	 <!-- xwork -->
+	 <logger name="com.opensymphony" additivity="true">
+	  <level value="debug" />
+	 </logger>
+	 
+	 <logger name="org.apache.struts2" additivity="true">
+	  <level value="debug" />
+	 </logger>
+
+	 <logger name="freemarker.log.Log4JLoggerFactory" additivity="true">
+	  <level value="debug" />
+	 </logger>	 
+	
+
+
+	
+	
+	<!-- The Following 5 logs can be turned on and off while the server is running 
+		LIVE in order to trace the SQL and/or all JDBC coming out of the application. 
+		To turn a log on, set the level value to INFO or DEBUG (to see class name 
+		and line number information in the log) The DEBUG setting is much more inefficient 
+		but the output is much more useful. To turn off JDBC logging completely, 
+		you must set all 5 logs to a level higher than ERROR (FATAL is suggested.) -->
+	<!-- log SQL (pre-execution) plus exceptions caused by SQL -->
+	<logger name="jdbc.sqlonly" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stdout-appender" />
+	</logger>
+	<!-- log SQL with timing information, post execution -->
+	<logger name="jdbc.sqltiming" additivity="true">
+		<level value="debug" />
+		<appender-ref ref="sql-timing-appender" />
+	</logger>
+	<!-- only use the two logs below to trace ALL JDBC information, NOTE: This 
+		can be very voluminous! -->
+	<!-- log all jdbc calls except ResultSet calls -->
+	<logger name="jdbc.audit" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stdout-appender" />
+	</logger>
+	<!-- log the jdbc ResultSet calls -->
+	<logger name="jdbc.resultset" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stdout-appender" />
+	</logger>
+
+	<!-- log connection open/close events and dump of all open connection numbers -->
+	<logger name="jdbc.connection" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stdout-appender" />
+	</logger>
+	<!-- this log is for internal debugging of log4jdbc, itself -->
+	<!-- debug logging for log4jdbc itself -->
+	<logger name="log4jdbc.debug" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stdout-appender" />
+	</logger>
+	<!-- by default, log everything to the console with a level of WARN or higher -->
+	 <!-- 指定logger的设置，additivity指示是否遵循缺省的继承机制-->
+    <logger name="org.apache.activemq.transport.AbstractInactivityMonitor" additivity="false">
+        <level value ="error"/>
+        <appender-ref ref="stdout-appender" />
+    </logger>
+	<logger name="com.mchange.v2.resourcepool.BasicResourcePool" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stdout-appender" />
+	</logger>
+	<logger name="com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stdout-appender" />
+	</logger>
+	<logger name="com.mchange.v2.c3p0.impl.NewPooledConnection" additivity="false">
+		<level value="error" />
+		<appender-ref ref="stdout-appender" />
+	</logger>
+	
+	<root>
+		<level value="debug" />
+		<appender-ref ref="stdout-appender" />
+		<appender-ref ref="web-file" />
+	</root>
+</log4j:configuration>  

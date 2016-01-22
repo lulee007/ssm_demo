@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+        "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+    <!-- 加载STRUTS默认配置 -->
+    <include file="struts-default.xml"/>
+	<include file="struts-plugin.xml"/>
+    <!-- 声明STRUTS常量配置 -->
+    <constant name="struts.enable.DynamicMethodInvocation" value="true"/>
+    <constant name="struts.ognl.allowStaticMethodAccess" value="true" />
+    <!-- struts.devMode used in dev mode -->
+    <constant name="struts.devMode" value="true"/>
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
+    <constant name="struts.objectFactory"
+              value="org.apache.struts2.spring.StrutsSpringObjectFactory"/>
+	<!-- <constant name="struts.multipart.saveDir" value="/temp"/> -->
+    <constant name="struts.ui.theme" value="simple"/>
+	<!-- <constant name="struts.action.extension" value=","/>-->
+    <!-- <constant name="struts.multipart.saveDir" value="d:uploadtemp"/>-->
+    <!-- 改变struts2默认为2M的上传文件大小限制 -->
+	<constant name="struts.multipart.maxSize" value="1024000000"/> 
+    <!-- 指定不经过struts2框架处理的URL规则-->
+	<!-- <constant name="struts.action.excludePattern" value="/downloadFile,/httpService,/dwr/.*,/dwr/test/.*"/> -->
+
+    <!-- 加载JSON结果转换,加载自定义结果 -->
+    <package name="my-struts" extends="struts-default" namespace="/">
+        <result-types>
+            <result-type name="json" class="org.apache.struts2.json.JSONResult">
+                <!-- 这里指定将被Struts2序列化的属性，该属性在action中必须有对应的getter方法 -->
+                <!-- 指定是否序列化空的属性 -->
+                <param name="defaultEncoding">utf-8</param>
+                <param name="excludeNullProperties">false</param>
+                <!-- 指定内容类型，默认为application/json，IE浏览器会提示下载 -->
+                <param name="contentType">text/html</param>
+                <!-- 是否启用压缩 -->
+                <param name="enableGZIP">false</param>
+                <!-- 是否忽略层级关系,即不关注父类中的对象 -->
+                <param name="ignoreHierarchy">false</param>
+                <!-- 排除的对象 -->
+                <param name="excludeProperties">
+                    request,session
+                </param>
+            </result-type>
+        </result-types>
+        
+        <interceptors>
+            <interceptor name="json" class="org.apache.struts2.json.JSONInterceptor"/>
+            <interceptor-stack name="myStack">
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref name="myStack"/>
+        <!-- comment added by lulee007 设置找不到action默认跳转的页面->首页 index -->
+        <default-action-ref name="index"/>
+        
+        <global-results>
+            <result name="json" type="json"/>
+            <result name="index" type="redirect">/index</result>
+            <result name="exception">/views/common/error.jsp</result>
+        </global-results>
+
+    </package>
+
+    <!-- 加载业务-Action配置   -->
+    <include file="config/struts2/struts-user.xml"/>
+      
+</struts>
